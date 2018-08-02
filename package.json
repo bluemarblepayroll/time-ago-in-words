@@ -1,6 +1,6 @@
 {
   "name": "@bluemarblepayroll/time-ago-in-words",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Localizable relative time resolver",
   "main": "./dist/time_ago.js",
   "typings": "./dist/time_ago.d.ts",
