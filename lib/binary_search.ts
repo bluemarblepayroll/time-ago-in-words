@@ -5,23 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export namespace BinarySearch {
+export interface IEntry {
+  key: number;
+}
 
-  export interface Entry {
-    key:number;
+function innerSearch(array: IEntry[], value: number, lower: number, pos: number, upper: number): IEntry {
+  if (array[pos].key <= value && value < array[pos + 1].key) {
+    return array[pos];
+  } else if (value < array[pos].key) {
+    return innerSearch(array, value, lower, Math.floor((lower + pos - 1) / 2), pos - 1);
   }
 
-  function innerSearch(array:Array<Entry>, value:number, lower:number, pos:number, upper:number):Entry {
-    if (array[pos].key <= value && value < array[pos + 1].key) {
-      return array[pos];
-    } else if (value < array[pos].key) {
-      return innerSearch(array, value, lower, Math.floor((lower + pos - 1) / 2), pos - 1);
-    }
+  return innerSearch(array, value, pos + 1, Math.floor((pos + 1 + upper) / 2), upper);
+}
 
-    return innerSearch(array, value, pos + 1, Math.floor((pos + 1 + upper) / 2), upper);
-  }
-
-  export function search(array:Array<Entry>, value:number):Entry {
-    return innerSearch(array, value, 0, Math.floor((array.length - 1) / 2), array.length - 1);
-  }
+export function binarySearch(array: IEntry[], value: number): IEntry {
+  return innerSearch(array, value, 0, Math.floor((array.length - 1) / 2), array.length - 1);
 }

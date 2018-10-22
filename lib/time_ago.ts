@@ -5,109 +5,214 @@
  * LICENSE file in the root directory of this source tree.
  */
 
- import { I18n } from "./i18n";
- import { BinarySearch } from "./binary_search";
+import { binarySearch, IEntry } from "./binary_search";
+import { reset, set, translate } from "./i18n";
 
-export namespace TimeAgo {
+enum Unit {
+  Years = "year",
+  Months = "month",
+  Days = "day",
+  Hours = "hour",
+  Minutes = "minute",
+}
 
-  enum Unit {
-    Years = 'year',
-    Months = 'month',
-    Days = 'day',
-    Hours = 'hour',
-    Minutes = 'minute'
+enum Tense {
+  Past,
+  Future,
+}
+
+class TimeSpan {
+  public unit: Unit;
+  public tense: Tense;
+  public value: number;
+
+  constructor(unit: Unit, tense: Tense, value: number) {
+    this.unit = unit;
+    this.tense = tense;
+    this.value = value;
   }
 
-  enum Tense {
-    Past,
-    Future
-  }
-
-  class TimeSpan {
-    unit:Unit;
-    tense:Tense;
-    value:number;
-
-    constructor(unit:Unit, tense:Tense, value:number) {
-      this.unit = unit;
-      this.tense = tense;
-      this.value = value;
-    }
-
-    template():string {
-      if (this.unit === Unit.Minutes && this.value === 0 && this.tense === Tense.Future) {
-        return `in a minute`;
-      } else if (this.unit === Unit.Minutes && this.value === 0 && this.tense === Tense.Past) {
-        return `less than a minute ago`;
-      } else if (this.tense === Tense.Past) {
-        return `%s ${this.noun()} ago`;
-      } else if (this.tense == Tense.Future) {
-        return `in %s ${this.noun()}`;
-      } else {
-        throw `Tense cannot be handled: ${this.tense}`;
-      }
-    }
-
-    private noun():string {
-      if (this.value > 1) {
-        return `${this.unit}s`;
-      }
-
-      return this.unit;
+  public template(): string {
+    if (this.unit === Unit.Minutes && this.value === 0 && this.tense === Tense.Future) {
+      return `in a minute`;
+    } else if (this.unit === Unit.Minutes && this.value === 0 && this.tense === Tense.Past) {
+      return `less than a minute ago`;
+    } else if (this.tense === Tense.Past) {
+      return `%s ${this.noun()} ago`;
+    } else if (this.tense === Tense.Future) {
+      return `in %s ${this.noun()}`;
+    } else {
+      throw new Error(`Tense cannot be handled: ${this.tense}`);
     }
   }
 
-  interface ValueResolver {
-    (minutes:number):number;
-  }
+  private noun(): string {
+    if (this.value > 1) {
+      return `${this.unit}s`;
+    }
 
-  interface MinutesEntry extends BinarySearch.Entry {
-    unit:Unit;
-    tense:Tense;
-    valueResolver:ValueResolver;
-  }
-
-  const minuteRanges:Array<MinutesEntry> = [
-    { key: Number.NEGATIVE_INFINITY, unit: Unit.Years,    tense: Tense.Future, valueResolver: m => parseInt(Math.abs(m / 525960).toFixed(), 10) },
-    { key: -529600                 , unit: Unit.Years,    tense: Tense.Future, valueResolver: _ => 1 },
-    { key: -486400                 , unit: Unit.Months,   tense: Tense.Future, valueResolver: m => parseInt(Math.abs(m / 43200).toFixed(), 10) },
-    { key: -43200                  , unit: Unit.Months,   tense: Tense.Future, valueResolver: _ => 1 },
-    { key: -41760                  , unit: Unit.Days,     tense: Tense.Future, valueResolver: m => parseInt(Math.abs(m / 1440).toFixed(), 10) },
-    { key: -1440                   , unit: Unit.Days,     tense: Tense.Future, valueResolver: _ => 1 },
-    { key: -1380                   , unit: Unit.Hours,    tense: Tense.Future, valueResolver: m => parseInt(Math.abs(m / 60).toFixed(), 10) },
-    { key: -45                     , unit: Unit.Hours,    tense: Tense.Future, valueResolver: _ => 1 },
-    { key: -44                     , unit: Unit.Minutes,  tense: Tense.Future, valueResolver: m => parseInt(Math.abs(m).toFixed(), 10) },
-    { key: -1                      , unit: Unit.Minutes,  tense: Tense.Future, valueResolver: _ => 0 },
-    { key: 0                       , unit: Unit.Minutes,  tense: Tense.Past,   valueResolver: _ => 0 },
-    { key: 1                       , unit: Unit.Minutes,  tense: Tense.Past,   valueResolver: _ => 1 },
-    { key: 2                       , unit: Unit.Minutes,  tense: Tense.Past,   valueResolver: m => parseInt(m.toFixed(), 10) },
-    { key: 45                      , unit: Unit.Hours,    tense: Tense.Past,   valueResolver: _ => 1 },
-    { key: 90                      , unit: Unit.Hours,    tense: Tense.Past,   valueResolver: m => parseInt((m / 60).toFixed(), 10) },
-    { key: 1440                    , unit: Unit.Days,     tense: Tense.Past,   valueResolver: _ => 1 },
-    { key: 2880                    , unit: Unit.Days,     tense: Tense.Past,   valueResolver: m => parseInt((m / 1440).toFixed(), 10) },
-    { key: 43200                   , unit: Unit.Months,   tense: Tense.Past,   valueResolver: _ => 1 },
-    { key: 86400                   , unit: Unit.Months,   tense: Tense.Past,   valueResolver: m => parseInt((m / 43200).toFixed(), 10) },
-    { key: 529600                  , unit: Unit.Years,    tense: Tense.Past,   valueResolver: _ => 1 },
-    { key: 1051200                 , unit: Unit.Years,    tense: Tense.Past,   valueResolver: m => parseInt((m / 525960).toFixed(), 10) },
-    { key: Number.MAX_VALUE        , unit: null,          tense: null,         valueResolver: _ => null }
-  ];
-
-  function getTimeSpan(from:Date, to:Date):TimeSpan {
-    let minutes:number = (+to - +from) / 60000;
-
-    let match:MinutesEntry = BinarySearch.search(minuteRanges, minutes) as MinutesEntry;
-
-    return new TimeSpan(match.unit, match.tense, match.valueResolver(minutes));
-  }
-
-  export function inWords(from:Date, to:Date = new Date()):string {
-    let timeSpan:TimeSpan = getTimeSpan(from, to);
-
-    return I18n.translate(timeSpan.template(), timeSpan.value.toString());
-  }
-
-  export const Translator = {
-    reset: I18n.reset,
-    set: I18n.set
+    return this.unit;
   }
 }
+
+type ValueResolver = (minutes: number) => number;
+
+interface IMinutesEntry extends IEntry {
+  unit: Unit;
+  tense: Tense;
+  valueResolver: ValueResolver;
+}
+
+const minuteRanges: IMinutesEntry[] = [
+  {
+    key: Number.NEGATIVE_INFINITY,
+    tense: Tense.Future,
+    unit: Unit.Years,
+    valueResolver: (m) => parseInt(Math.abs(m / 525960).toFixed(), 10),
+  },
+  {
+    key: -529600,
+    tense: Tense.Future,
+    unit: Unit.Years,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: -486400,
+    tense: Tense.Future,
+    unit: Unit.Months,
+    valueResolver: (m) => parseInt(Math.abs(m / 43200).toFixed(), 10),
+  },
+  {
+    key: -43200,
+    tense: Tense.Future,
+    unit: Unit.Months,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: -41760,
+    tense: Tense.Future,
+    unit: Unit.Days,
+    valueResolver: (m) => parseInt(Math.abs(m / 1440).toFixed(), 10),
+  },
+  {
+    key: -1440,
+    tense: Tense.Future,
+    unit: Unit.Days,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: -1380,
+    tense: Tense.Future,
+    unit: Unit.Hours,
+    valueResolver: (m) => parseInt(Math.abs(m / 60).toFixed(), 10),
+  },
+  {
+    key: -45,
+    tense: Tense.Future,
+    unit: Unit.Hours,
+    valueResolver: (_) => 1 },
+  {
+    key: -44,
+    tense: Tense.Future,
+    unit: Unit.Minutes,
+    valueResolver: (m) => parseInt(Math.abs(m).toFixed(), 10),
+  },
+  {
+    key: -1,
+    tense: Tense.Future,
+    unit: Unit.Minutes,
+    valueResolver: (_) => 0,
+  },
+  {
+    key: 0,
+    tense: Tense.Past,
+    unit: Unit.Minutes,
+    valueResolver: (_) => 0,
+  },
+  {
+    key: 1,
+    tense: Tense.Past,
+    unit: Unit.Minutes,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: 2,
+    tense: Tense.Past,
+    unit: Unit.Minutes,
+    valueResolver: (m) => parseInt(m.toFixed(), 10),
+  },
+  {
+    key: 45,
+    tense: Tense.Past,
+    unit: Unit.Hours,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: 90,
+    tense: Tense.Past,
+    unit: Unit.Hours,
+    valueResolver: (m) => parseInt((m / 60).toFixed(), 10),
+  },
+  {
+
+    key: 1440,
+    tense: Tense.Past,
+    unit: Unit.Days,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: 2880,
+    tense: Tense.Past,
+    unit: Unit.Days,
+    valueResolver: (m) => parseInt((m / 1440).toFixed(), 10),
+  },
+  {
+    key: 43200,
+    tense: Tense.Past,
+    unit: Unit.Months,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: 86400,
+    tense: Tense.Past,
+    unit: Unit.Months,
+    valueResolver: (m) => parseInt((m / 43200).toFixed(), 10),
+  },
+  {
+    key: 529600,
+    tense: Tense.Past,
+    unit: Unit.Years,
+    valueResolver: (_) => 1,
+  },
+  {
+    key: 1051200,
+    tense: Tense.Past,
+    unit: Unit.Years,
+    valueResolver: (m) => parseInt((m / 525960).toFixed(), 10),
+  },
+  {
+    key: Number.MAX_VALUE,
+    tense: null,
+    unit: null,
+    valueResolver: (_) => null,
+  },
+];
+
+function getTimeSpan(from: Date, to: Date): TimeSpan {
+  const minutes: number = (+to - +from) / 60000;
+
+  const match: IMinutesEntry = binarySearch(minuteRanges, minutes) as IMinutesEntry;
+
+  return new TimeSpan(match.unit, match.tense, match.valueResolver(minutes));
+}
+
+export function timeAgoInWords(from: Date, to: Date = new Date()): string {
+  const timeSpan: TimeSpan = getTimeSpan(from, to);
+
+  return translate(timeSpan.template(), timeSpan.value.toString());
+}
+
+export {
+  reset as timeAgoReset,
+  set as timeAgoSet,
+};

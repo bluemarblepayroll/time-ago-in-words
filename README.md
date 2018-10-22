@@ -55,15 +55,19 @@ yarn add @bluemarblepayroll/time-ago-in-words
 Suppose you just want to get the relative time between a Date and now (in our case lets use January 1, 2018 12:00:00 PM):
 
 ````
+import { timeAgoInWords } from '@bluemarblepayroll/time-ago-in-words';
+
 let from = new Date(2017, 11, 31, 23); # December 31, 2017 11:00:00 PM
-let value = TimeAgo.inWords(from); # "13 hours ago"
+
+let value = timeAgoInWords(from); # "13 hours ago"
 ````
 
 It also works for future times as well:
 
 ````
 let from = new Date(2020, 0, 1, 12); # January 1, 2020 12:00:00 PM
-let value = TimeAgo.inWords(from); # "in 2 years"
+
+let value = timeAgoInWords(from); # "in 2 years"
 ````
 
 ### Explicit Time Span Example
@@ -73,13 +77,15 @@ You can also pass in each part of the time span (from and to).  Using the above 
 ````
 let from = new Date(2017, 11, 31, 23); # December 31, 2017 11:00:00 PM
 let to = new Date(2018, 0, 1, 12); # January 1, 2018 12:00:00 PM
-let value = TimeAgo.inWords(from, to); # "13 hours ago"
+
+let value = timeAgoInWords(from, to); # "13 hours ago"
 ````
 
 ````
 let from = new Date(2020, 0, 1, 12); # January 1, 2020 12:00:00 PM
 let to = new Date(2018, 0, 1, 12); # January 1, 2018 12:00:00 PM
-let value = TimeAgo.inWords(from, to); # "in 2 years"
+
+let value = timeAgoInWords(from, to); # "in 2 years"
 ````
 
 ### Custom Localization Example
@@ -94,21 +100,31 @@ Based on our previous examples, let's say we wanted to localize the following ph
 Based on our initial examples, respectively, we can achieve this like so:
 
 ````
-TimeAgo.Translator.set({ '%s hours ago': 'hace %s horas' });
+import { timeAgoSet } from '@bluemarblepayroll/time-ago-in-words';
+
+timeAgoSet({ '%s hours ago': 'hace %s horas' });
+
 let from = new Date(2017, 11, 31, 23); # December 31, 2017 11:00:00 PM
-let value = TimeAgo.inWords(from); # "hace 13 horas"
+
+let value = timeAgoInWords(from); # "hace 13 horas"
 ````
 
 ````
-TimeAgo.Translator.set({ 'in %s years': 'en %s años' });
+import { timeAgoSet } from '@bluemarblepayroll/time-ago-in-words';
+
+timeAgoSet({ 'in %s years': 'en %s años' });
+
 let from = new Date(2020, 0, 1, 12); # January 1, 2020 12:00:00 PM
-let value = TimeAgo.inWords(from); # "en 2 años"
+
+let value = timeAgoInWords(from); # "en 2 años"
 ````
 
 If you wish to revert back to default translations:
 
 ````
-TimeAgo.Translator.reset()
+import { timeAgoReset } from '@bluemarblepayroll/time-ago-in-words';
+
+timeAgoReset();
 ````
 
 ## Contributing
@@ -128,7 +144,7 @@ Basic steps to take to get this repository compiling:
 To compile the TypeScript source down to native JavaScript, run:
 
 ````
-npm run build
+yarn run build
 ````
 
 ### Running Tests
@@ -136,7 +152,13 @@ npm run build
 To execute the test suite first compile the solution then run:
 
 ````
-npm run test
+yarn run test
+````
+
+### Linting
+
+````
+yarn run lint
 ````
 
 ## License

@@ -8,33 +8,35 @@
 'use strict';
 
 var expect = require('chai').expect;
-var TimeAgo = require('../dist/time_ago.js').TimeAgo;
+var timeAgoInWords = require('../dist/time_ago.js').timeAgoInWords;
+var timeAgoReset = require('../dist/time_ago.js').timeAgoReset;
+var timeAgoSet = require('../dist/time_ago.js').timeAgoSet;
 
 describe('when using custom translations', () => {
 
   beforeEach( () => {
-    TimeAgo.Translator.reset();
+    timeAgoReset();
   });
 
   it('should correctly translate: less than a minute ago', () => {
 
-    TimeAgo.Translator.set({ 'less than a minute ago': 'abc' });
+    timeAgoSet({ 'less than a minute ago': 'abc' });
 
     let from = new Date(2017, 11, 31, 23, 59, 1);
     let to = new Date(2018, 0);
 
-    let result = TimeAgo.inWords(from, to);
+    let result = timeAgoInWords(from, to);
     expect(result).to.equal('abc');
   });
 
   it('should correctly translate: in a minute', () => {
 
-    TimeAgo.Translator.set({ 'in a minute': 'abc' });
+    timeAgoSet({ 'in a minute': 'abc' });
 
     let from = new Date(2018, 0, 1, 0, 0, 1);
     let to = new Date(2018, 0);
 
-    let result = TimeAgo.inWords(from, to);
+    let result = timeAgoInWords(from, to);
     expect(result).to.equal('abc');
   });
 
@@ -44,7 +46,7 @@ describe('when using custom translations', () => {
 describe('TimeAgo#inWords', () => {
 
   beforeEach( () => {
-    TimeAgo.Translator.reset();
+    timeAgoReset();
   });
 
   it('when from date is more than 2 years back in the past', () => {
@@ -63,7 +65,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -86,7 +88,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -114,7 +116,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -140,7 +142,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -177,7 +179,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -200,7 +202,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -219,7 +221,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -239,7 +241,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -264,7 +266,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -285,7 +287,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -308,7 +310,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -327,7 +329,7 @@ describe('TimeAgo#inWords', () => {
     ];
 
     tests.forEach(x => {
-      let result = TimeAgo.inWords(x[0], x[1]);
+      let result = timeAgoInWords(x[0], x[1]);
       expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
     });
   });
@@ -347,7 +349,7 @@ describe('TimeAgo#inWords', () => {
       ];
 
       tests.forEach(x => {
-        let result = TimeAgo.inWords(x[0], x[1]);
+        let result = timeAgoInWords(x[0], x[1]);
         expect(result).to.equal(x[2], `Failed on: ${x[0]}`);
       });
   });
