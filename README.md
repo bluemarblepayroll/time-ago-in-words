@@ -2,7 +2,7 @@
 
 **Localizable relative time resolver**
 
-[![Build Status](https://travis-ci.org/bluemarblepayroll/time-ago-in-words.svg?branch=master)](https://travis-ci.org/bluemarblepayroll/time-ago-in-words)
+[![npm version](https://badge.fury.io/js/%40bluemarblepayroll%2Ftime-ago-in-words.svg)](https://badge.fury.io/js/%40bluemarblepayroll%2Ftime-ago-in-words) [![Build Status](https://travis-ci.org/bluemarblepayroll/time-ago-in-words.svg?branch=master)](https://travis-ci.org/bluemarblepayroll/time-ago-in-words) [![Maintainability](https://api.codeclimate.com/v1/badges/3411d669b2c7b7c1011f/maintainability)](https://codeclimate.com/github/bluemarblepayroll/time-ago-in-words/maintainability) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This library lets you easily convert a JavaScript Date object to a relative time span description.  For example, let's say the
 current date and time is January 1, 2018 12:00:00 PM, then January 10, 2018 12:00:00 PM would resolve to: *in 9 days*.  More general examples:
